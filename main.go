@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/api/src/config"
 	"api/api/src/router"
 	"fmt"
 	"log"
@@ -8,6 +9,7 @@ import (
 )
 
 func main() {
+	config.Carregar()
 	fmt.Println("Hello World")
 
 	r := router.Gerar()
