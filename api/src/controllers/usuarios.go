@@ -24,7 +24,11 @@ func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	repo := repo.NovoRepoUsuarios(db)
-	repo.Criar(usuario)
+	usuarioID , err := repo.Criar(usuario)
+	if err != nil {
+		log.Fatal(err)
+	}
+	w.Write([]byte("ID inserido: " + string(usuarioID)))
 }
 
 func BuscarUsuarios(w http.ResponseWriter, r *http.Request) {
