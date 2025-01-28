@@ -1,8 +1,8 @@
 package main
 
 import (
-	"api/api/src/config"
-	"api/api/src/router"
+	"api/src/config"
+	"api/src/router"
 	"fmt"
 	"log"
 	"net/http"
