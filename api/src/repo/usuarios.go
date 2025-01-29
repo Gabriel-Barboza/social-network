@@ -32,7 +32,6 @@ func (u Usuarios) Criar(usuario models.Usuario) (int, error) {
 	return int(ultimoIDInserido), nil
 }
 
-
 func (repositorio Usuarios) Buscar(nomeOuNick string) ([]models.Usuario, error) {
 	nomeOuNick = fmt.Sprintf("%%%s%%", nomeOuNick)
 
@@ -54,7 +53,7 @@ func (repositorio Usuarios) Buscar(nomeOuNick string) ([]models.Usuario, error) 
 }
 
 func (repositorio Usuarios) BuscarPorID(id int) (models.Usuario, error) {
-	linhas , err := repositorio.db.Query("select id , nome , nick , email , criadoEm from usuarios where id = ? ", id)
+	linhas, err := repositorio.db.Query("select id , nome , nick , email , criadoEm from usuarios where id = ? ", id)
 	if err != nil {
 		return models.Usuario{}, err
 	}
@@ -69,4 +68,31 @@ func (repositorio Usuarios) BuscarPorID(id int) (models.Usuario, error) {
 		}
 	}
 	return usuario, nil
+}
+
+func (repositorio Usuarios) Atualizar(id int, usuario models.Usuario) error {
+	statement, erro := repositorio.db.Prepare("update usuarios set nome = ? , nick = ? , email = ? where id = ? ")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+	if _, err := statement.Exec(usuario.Nome, usuario.Nick, usuario.Email, id); err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (repositorio Usuarios) Deletar(id int) error {
+	statement, err := repositorio.db.Prepare("delete  from usuarios where id = ? ")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err = statement.Exec(id); err != nil {
+		return err
+	}
+
+	return nil
 }

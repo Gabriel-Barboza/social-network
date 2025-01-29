@@ -15,15 +15,15 @@ type Usuario struct {
 	CriadoEm time.Time `json:"criadoem,omitempty"`
 }
 
-func (u *Usuario) Preparar() error {
-	if err := u.Validar(); err != nil {
+func (u *Usuario) Preparar(etapa string) error {
+	if err := u.Validar(etapa); err != nil {
 		return err
 	}
 	u.Formatar()
 	return nil
 }
 
-func (u *Usuario) Validar() error {
+func (u *Usuario) Validar(etapa string) error {
 	if u.Nome == "" {
 		return errors.New("o campo nome é obrigatório e não pode estar em branco")
 	}
@@ -33,7 +33,7 @@ func (u *Usuario) Validar() error {
 	if u.Email == "" {
 		return errors.New("o campo email é obrigatório e não pode estar em branco")
 	}
-	if u.Senha == "" {
+	if etapa == "cadastro" && u.Senha == "" {
 		return errors.New("o campo senha é obrigatório e não pode estar em branco")
 	}
 	return nil
