@@ -10,7 +10,7 @@ create table usuarios(
     nick varchar(50) not null unique,
     email varchar(100) not null unique,
     senha varchar(32) not null,
-    criado_em datetime default current_timestamp())
+    criadoEm datetime default current_timestamp())
     engine=InnoDB default charset=utf8;
 
 
