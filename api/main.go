@@ -11,6 +11,7 @@ import (
 func main() {
 	config.Carregar()
 	fmt.Println("Hello World")
+	
 
 	r := router.Gerar()
 
