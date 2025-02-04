@@ -42,7 +42,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		respostas.Erro(w, http.StatusUnauthorized, err)
 		return
 	}
-	token, _ := auth.CriarToken(usuarioSalvoNoBanco.Id)
+	token, err := auth.CriarToken(usuarioSalvoNoBanco.Id)
+	if err != nil {
+		respostas.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
 	fmt	.Println(token)
 	w.Write([]byte(token))
 }
