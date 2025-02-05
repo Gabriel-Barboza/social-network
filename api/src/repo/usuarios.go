@@ -113,3 +113,15 @@ func (repositorio Usuarios) BuscarPorEmail(email string) (models.Usuario, error)
 	}
 	return usuario, nil
 }
+
+func (repositorio Usuarios) Seguir(usuarioID, seguidorID int) error {
+	statement, err := repositorio.db.Prepare("insert ignore into seguidores(usuario_id, seguidor_id) values(?, ?)")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+	if _, err = statement.Exec(usuarioID, seguidorID); err != nil {
+		return err
+	}
+	return nil
+}

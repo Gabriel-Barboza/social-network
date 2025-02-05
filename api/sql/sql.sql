@@ -2,6 +2,7 @@ CREATE DATABASE IF NOT EXISTS devbook;
 use devbook;
 
 drop table if exists usuarios;
+drop table if EXISTS seguidores
 
 
 create table usuarios(
@@ -14,3 +15,14 @@ create table usuarios(
     engine=InnoDB default charset=utf8;
 
 
+create table seguidores (
+    usuario_id int not null,
+    Foreign Key (usuario_id) REFERENCES usuarios(id)
+    on delete cascade,
+
+    seguidor_id int not null,
+    Foreign Key (seguidor_id) REFERENCES usuarios(id)
+    on delete cascade,
+
+    PRIMARY KEY (usuario_id, seguidor_id)
+    ) engine=InnoDB default charset=utf8;
