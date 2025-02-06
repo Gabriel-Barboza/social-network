@@ -12,3 +12,10 @@ INSERT INTO seguidores (usuario_id, seguidor_id) VALUES
 (2, 1),
 (3, 1),
 (4, 2);
+
+INSERT INTO publicacoes (titulo, conteudo, autor_id) VALUES 
+('Primeira Publicação', 'Este é o conteúdo da primeira publicação.', 1),
+('Segunda Publicação', 'Este é o conteúdo da segunda publicação.', 2),
+('Terceira Publicação', 'Este é o conteúdo da terceira publicação.', 3),
+('Quarta Publicação', 'Este é o conteúdo da quarta publicação.', 4),
+('Quinta Publicação', 'Este é o conteúdo da quinta publicação.', 1);

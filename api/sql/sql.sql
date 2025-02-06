@@ -1,9 +1,9 @@
 CREATE DATABASE IF NOT EXISTS devbook;
 use devbook;
 
+drop table if EXISTS publicacoes;
+drop table if EXISTS seguidores;
 drop table if exists usuarios;
-drop table if EXISTS seguidores
-
 
 create table usuarios(
     id int auto_increment primary key,
@@ -26,3 +26,17 @@ create table seguidores (
 
     PRIMARY KEY (usuario_id, seguidor_id)
     ) engine=InnoDB default charset=utf8;
+
+create table publicacoes(
+    id int auto_increment primary key,
+    titulo VARCHAR(100) not null,
+    conteudo VARCHAR(1000) not null,
+    autor_id int not null,
+    Foreign Key (autor_id) REFERENCES usuarios(id) 
+    on delete cascade,
+
+    curtidas int DEFAULT 0,
+    criadoEm datetime default current_timestamp()
+    ) engine=InnoDB default charset=utf8;
+
+
