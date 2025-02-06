@@ -6,6 +6,7 @@ import (
 	"api/src/models"
 	"api/src/repo"
 	"api/src/respostas"
+	"api/src/seguranca"
 	"encoding/json"
 	"errors"
 	"io"
@@ -212,4 +213,147 @@ func SeguirUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respostas.JSON(w, http.StatusNoContent, nil)
+}
+
+func PararDeSeguirUsuario(w http.ResponseWriter, r *http.Request) {
+	seguidorID, err := auth.ExtrairUsuarioId(r)
+
+	if err != nil {
+		respostas.Erro(w, http.StatusUnauthorized, err)
+		return
+	}
+	parametros := mux.Vars(r)
+
+	usuarioID, erro := strconv.ParseInt(parametros["usuarioId"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	if seguidorID == int(usuarioID) {
+		respostas.Erro(w, http.StatusForbidden, errors.New("não é possível parar de seguir você mesmo"))
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repo := repo.NovoRepoUsuarios(db)
+	if err = repo.PararDeSeguir(int(usuarioID), seguidorID); err != nil {
+		respostas.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	respostas.JSON(w, http.StatusNoContent, nil)
+
+}
+
+func BuscarSeguidores(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	usuarioID, erro := strconv.ParseInt(parametros["usuarioId"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repo := repo.NovoRepoUsuarios(db)
+	seguidores, erro := repo.BuscarSeguidores(int(usuarioID))
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	respostas.JSON(w, http.StatusOK, seguidores)
+
+}
+
+func BuscarSeguindo(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	usuarioID, erro := strconv.ParseInt(parametros["usuarioId"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repo := repo.NovoRepoUsuarios(db)
+	usuarios, erro := repo.BuscarSeguindo(int(usuarioID))
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	respostas.JSON(w, http.StatusOK, usuarios)
+}
+
+func AtualizarSenha(w http.ResponseWriter, r *http.Request) {
+
+	usuarioIDNoToken, erro := auth.ExtrairUsuarioId(r)
+	if erro != nil {
+		respostas.Erro(w, http.StatusUnauthorized, erro)
+		return
+	}
+
+	parametros := mux.Vars(r)
+	usuarioID, erro := strconv.ParseInt(parametros["usuarioId"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	if usuarioIDNoToken != int(usuarioID) { //verificar se o usuario é o mesmo
+		respostas.Erro(w, http.StatusForbidden, errors.New("não é possível atualizar a senha de um usuário que não seja o seu"))
+		return
+	}
+
+	corpoRequest, erro := io.ReadAll(r.Body)
+
+	var senha models.Senha
+	if erro = json.Unmarshal(corpoRequest, &senha); erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repo := repo.NovoRepoUsuarios(db)
+	senhaSalvaNoBanco, err := repo.BuscarSenha(int(usuarioID))
+	if err != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	if err = seguranca.VerificarSenha(senha.Atual, senhaSalvaNoBanco); err != nil {
+		respostas.Erro(w, http.StatusUnauthorized, errors.New("a senha atual não condiz com a senha que está no banco"))
+		return
+	}
+
+	senhaComHash, erro := seguranca.Hash(senha.Nova)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+	if err = repo.AtualizarSenha(int(usuarioID), string(senhaComHash)); err != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	respostas.JSON(w, http.StatusNoContent, nil)
+
 }
