@@ -186,11 +186,10 @@ func DeletarPublicacao(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
 	respostas.JSON(w, http.StatusNoContent, nil)
 }
 
-func BuscarPublicacoesPorUsuario (   w http.ResponseWriter, r *http.Request) {
+func BuscarPublicacoesPorUsuario(w http.ResponseWriter, r *http.Request) {
 	parametros := mux.Vars(r)
 	usuarioID, err := strconv.ParseInt(parametros["usuarioId"], 10, 64)
 	if err != nil {
@@ -210,4 +209,51 @@ func BuscarPublicacoesPorUsuario (   w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respostas.JSON(w, http.StatusOK, publicacoes)
+}
+
+func CurtirPublicacao(w http.ResponseWriter, r *http.Request) {
+
+	parametros := mux.Vars(r)
+	publicacaoID, err := strconv.ParseInt(parametros["publicacaoId"], 10, 64)
+	if err != nil {
+		respostas.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+	db, err := banco.Conectar()
+	if err != nil {
+		respostas.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repo := repo.NovoRepositorioDePublicacoes(db)
+	if err = repo.Curtir(publicacaoID); err != nil {
+		respostas.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	respostas.JSON(w, http.StatusNoContent, nil)
+
+}
+func DescurtirPublicacao(w http.ResponseWriter, r *http.Request) {
+
+	parametros := mux.Vars(r)
+	publicacaoID, err := strconv.ParseInt(parametros["publicacaoId"], 10, 64)
+	if err != nil {
+		respostas.Erro(w, http.StatusBadRequest, err)
+		return
+	}
+	db, err := banco.Conectar()
+	if err != nil {
+		respostas.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repo := repo.NovoRepositorioDePublicacoes(db)
+	if err = repo.Descurtir(publicacaoID); err != nil {
+		respostas.Erro(w, http.StatusInternalServerError, err)
+		return
+	}
+	respostas.JSON(w, http.StatusNoContent, nil)
+
 }
