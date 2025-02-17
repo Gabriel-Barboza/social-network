@@ -8,9 +8,9 @@ import (
 	"api/src/respostas"
 	"api/src/seguranca"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -47,6 +47,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		respostas.Erro(w, http.StatusInternalServerError, err)
 		return
 	}
-	fmt	.Println(token)
-	w.Write([]byte(token))
+	usuarioID := strconv.FormatInt(int64(usuarioSalvoNoBanco.Id), 10)
+	respostas.JSON(w, http.StatusOK, models.DadosAuth{ID: usuarioID, Token: token})
+
 }
