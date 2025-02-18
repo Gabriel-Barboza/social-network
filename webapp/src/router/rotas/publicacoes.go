@@ -30,6 +30,6 @@ var rotasPublicacoes = []Rota{
 	},
 	{
 		URI:        "/publicacoes/{publicacaoid}",
-		Metodo:     http.MethodGet,
-		Funcao:     controllers.atualizarPublicacao,
+		Metodo:     http.MethodPut,
+		Funcao:     controllers.AtualizarPublicacao,
 		Autenticar: true}}

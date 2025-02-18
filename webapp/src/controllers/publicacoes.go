@@ -87,7 +87,7 @@ func DescurtirPublicacao(w http.ResponseWriter, r *http.Request) {
 	respostas.JSON(w, response.StatusCode, nil)
 }
 
-func atualizarPublicacao(w http.ResponseWriter, r *http.Request) {
+func AtualizarPublicacao(w http.ResponseWriter, r *http.Request) {
 	parametros := mux.Vars(r)
 	publicacaoID, err := strconv.ParseInt(parametros["publicacaoid"], 10, 64)
 	if err != nil {
@@ -113,6 +113,7 @@ func atualizarPublicacao(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer response.Body.Close()
+	fmt.Println(response.StatusCode)
 	if response.StatusCode >= 400 {
 		respostas.TratarStatusCodeDeErro(w, response)
 		return

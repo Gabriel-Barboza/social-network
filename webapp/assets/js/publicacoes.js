@@ -77,23 +77,23 @@ function descurtirpublicacao(evento) {
 
 }
 
-function atualizarPublicacao(evento) {
+function atualizarPublicacao() {
     $(this).prop('disabled', true);
     
-    const publicacaoElemento = $(this).data('publicacao-id');
+    const publicacaoId = $(this).data('publicacao-id');
     $.ajax({
         url: `/publicacoes/${publicacaoId}`,
         method: "PUT",
         data: {
             titulo: $('#titulo').val(),
             conteudo: $('#conteudo').val(),
-        }  ).done(function() {
-        alert("Publicação atualizada com sucesso");
+            }
+        }).done(function() {
+            alert("Publicação atualizada com sucesso");
+        }).fail(function(erro) {
+            console.log(erro);
+            alert("Erro ao atualizar publicação");
+        }).always(function() {
+            $('#atualizar-publicacao').prop('disabled', false);
+        });
     }
-    ).fail(function(erro) {
-        console.log(erro);
-        alert("Erro ao atualizar publicação");
-    }).always(function() {
-        $('#atualizar-publicacao').prop('disabled', false);
-    });
-}
