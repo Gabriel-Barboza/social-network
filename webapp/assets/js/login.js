@@ -2,7 +2,7 @@ $('#login').on('submit', fazerLogin);
 
 function fazerLogin(event) {
     event.preventDefault();
-   
+
 
     $.ajax({
         url: "/login",

@@ -62,7 +62,7 @@ func (repo publicacoes) Buscar(usuarioID int) ([]models.Publicacao, error) {
 		select distinct p.*, u.nick from publicacoes p
 		inner join usuarios u on u.id = p.autor_id
 		inner join seguidores s on p.autor_id = s.usuario_id
-		where u.id = ? or s.seguidor_id = ?`, usuarioID, usuarioID)
+		where u.id = ? or s.seguidor_id = ? order by criadoEm desc`, usuarioID, usuarioID)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func (repo publicacoes) Deletar(publicacaoID int64) error {
 
 func (repo publicacoes) BuscarPorUsuario(usuarioID int64) ([]models.Publicacao, error) {
 	linhas, err := repo.db.Query(` select p.*, u.nick from publicacoes p
-	inner join usuarios u on u.id = p.autor_id
+	 join usuarios u on u.id = p.autor_id
 	where p.autor_id = ?`, usuarioID)
 
 	if err != nil {

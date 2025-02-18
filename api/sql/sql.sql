@@ -1,8 +1,8 @@
 CREATE DATABASE IF NOT EXISTS devbook;
 use devbook;
 
-drop table if EXISTS publicacoes;
 drop table if EXISTS seguidores;
+drop table if EXISTS publicacoes;
 drop table if exists usuarios;
 
 create table usuarios(

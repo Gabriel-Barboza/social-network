@@ -17,6 +17,7 @@ func main() {
 	fmt.Println(config.HashKey)
 
 	utils.CarregarTemplates()
+	
 	r := router.Gerar()
 	fmt.Printf("escutando na porta %d \n", config.Porta)
 	log.Fatal(http.ListenAndServe(":3000", r))
