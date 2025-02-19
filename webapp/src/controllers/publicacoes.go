@@ -121,3 +121,26 @@ func AtualizarPublicacao(w http.ResponseWriter, r *http.Request) {
 	respostas.JSON(w, response.StatusCode, nil)
 
 }
+
+func DeletarPublicacao(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	publicacaoID, err := strconv.ParseInt(parametros["publicacaoid"], 10, 64)
+	if err != nil {
+		respostas.JSON(w, http.StatusBadRequest, respostas.ErroApi{Erro: err.Error()})
+		return
+	}
+	url := fmt.Sprintf("%s/publicacoes/%d", config.APIURL, publicacaoID)
+	response, err := requisicoes.FazerRequisicaoComAutenticacao(r, http.MethodDelete, url, nil)
+	if err != nil {
+		respostas.JSON(w, http.StatusInternalServerError, respostas.ErroApi{Erro: err.Error()})
+		return
+	}
+
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		respostas.TratarStatusCodeDeErro(w, response)
+		return
+	}
+	respostas.JSON(w, response.StatusCode, nil)
+}
