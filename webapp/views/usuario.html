@@ -4,7 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DevBook - {{.Usuario.Nome}}</title>
-    <link href="../assets/css/bootstrap.css" rel="stylesheet" />
+    <link href="/assets/css/bootstrap.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -29,11 +29,11 @@
                         </h6>
 
                         <p class="card-text">
-                            <a href="#" data-toggle="modal" data-target="#modal-seguidores">
+                            <a href="#" data-bs-toggle ="modal" data-bs-target="#modal-seguidores">
                                 Seguidores: {{ len .Usuario.Seguidores }}
                             </a>
                         </p>
-                        <p class="card-text" data-toggle="modal" data-target="#modal-seguindo">
+                        <p class="card-text" data-bs-toggle ="modal" data-bs-target="#modal-seguindo">
                             <a href="#">
                                 Seguindo: {{ len .Usuario.Seguindo }}
                             </a>
@@ -82,8 +82,9 @@
 
 
     {{ template "rodape" }}
-    {{ template "scripts" }}
-
+    {{ template "script" }}
+    {{ template "modal-seguidores" .Usuario }}
+    {{ template "modal-seguindo" .Usuario }}
     <script src="/assets/js/publicacoes.js"></script>
     <script src="/assets/js/usuario.js"></script>
 </body>

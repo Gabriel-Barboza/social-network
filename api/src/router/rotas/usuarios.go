@@ -46,6 +46,12 @@ var rotasUsuarios = []Rota{
 		Autenticar: true,
 	},
 	{
+		Url:        "/usuarios/{usuarioId}/publicacoes",
+		Metodo:     http.MethodGet,
+		Funcao:     controllers.BuscarPublicacoesPorUsuario,
+		Autenticar: true,
+	},
+	{
 		Url:        "/usuarios/{usuarioId}/parar-de-seguir",
 		Metodo:     http.MethodPost,
 		Funcao:     controllers.PararDeSeguirUsuario,
