@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"webapp/src/config"
 	"webapp/src/cookies"
 	"webapp/src/models"
@@ -16,7 +17,13 @@ import (
 )
 
 func CarregarTelaDeLogin(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.Ler(r)
+	if cookie["token"] != "" {
+		http.Redirect(w, r, "/home", http.StatusFound)
+		return
+	}
 	utils.ExecutarTemplate(w, "login.html", nil)
+
 }
 
 func CarregarTelaDeCadastroDeUsuario(w http.ResponseWriter, r *http.Request) {
@@ -78,4 +85,61 @@ func CarregarPaginaDeEdicaoDePublicacao(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	utils.ExecutarTemplate(w, "atualizar-publicacao.html", publicacao)
+}
+
+func CarregarPaginaDeUsuarios(w http.ResponseWriter, r *http.Request) {
+
+	nomeOuNick := strings.ToLower(r.URL.Query().Get("usuario"))
+	url := fmt.Sprintf("%s/usuarios?usuario=%s", config.APIURL, nomeOuNick)
+	response, err := requisicoes.FazerRequisicaoComAutenticacao(r, http.MethodGet, url, nil)
+	if err != nil {
+		respostas.JSON(w, http.StatusInternalServerError, respostas.ErroApi{Erro: err.Error()})
+		return
+	}
+
+	defer response.Body.Close()
+	if response.StatusCode >= 400 {
+		respostas.TratarStatusCodeDeErro(w, response)
+		return
+	}
+
+	var usuarios []models.Usuario
+	if err = json.NewDecoder(response.Body).Decode(&usuarios); err != nil {
+
+		respostas.JSON(w, http.StatusUnprocessableEntity, respostas.ErroApi{Erro: err.Error()})
+		return
+	}
+
+	utils.ExecutarTemplate(w, "usuarios.html", usuarios)
+}
+
+func CarregarPerfilDoUsuario(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	usuarioID, erro := strconv.ParseInt(parametros["usuarioId"], 10, 64)
+	if erro != nil {
+		respostas.JSON(w, http.StatusBadRequest, respostas.ErroApi{Erro: erro.Error()})
+		return
+	}
+
+	cookie, _ := cookies.Ler(r)
+	usuarioLogadoID, _ := strconv.ParseInt(cookie["id"], 10, 64)
+
+	if usuarioID == usuarioLogadoID {
+		http.Redirect(w, r, "/perfil", 302)
+		return
+	}
+
+	usuario, erro := models.BuscarUsuarioCompleto(usuarioID, r)
+	if erro != nil {
+		respostas.JSON(w, http.StatusInternalServerError, respostas.ErroApi{Erro: erro.Error()})
+		return
+	}
+
+	utils.ExecutarTemplate(w, "usuario.html", struct {
+		Usuario         models.Usuario
+		UsuarioLogadoID int64
+	}{
+		Usuario:         usuario,
+		UsuarioLogadoID: usuarioLogadoID,
+	})
 }

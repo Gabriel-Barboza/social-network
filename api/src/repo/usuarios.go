@@ -35,7 +35,7 @@ func (u Usuarios) Criar(usuario models.Usuario) (int, error) {
 func (repositorio Usuarios) Buscar(nomeOuNick string) ([]models.Usuario, error) {
 	nomeOuNick = fmt.Sprintf("%%%s%%", nomeOuNick)
 
-	linhas, err := repositorio.db.Query(" select id , nick , email , criadoEm from usuarios where nome like ? or nick like ? ", nomeOuNick, nomeOuNick)
+	linhas, err := repositorio.db.Query(" select id ,nome, nick , email , criadoEm from usuarios where nome like ? or nick like ? ", nomeOuNick, nomeOuNick)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (repositorio Usuarios) Buscar(nomeOuNick string) ([]models.Usuario, error) 
 	var usuarios []models.Usuario
 	for linhas.Next() {
 		var usuario models.Usuario
-		if err = linhas.Scan(&usuario.Id, &usuario.Nick, &usuario.Email, &usuario.CriadoEm); err != nil {
+		if err = linhas.Scan(&usuario.Id, &usuario.Nome, &usuario.Nick, &usuario.Email, &usuario.CriadoEm); err != nil {
 			return nil, err
 		}
 		usuarios = append(usuarios, usuario)
